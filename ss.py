@@ -3,12 +3,12 @@ import os
 import time
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 
-# هنا حط التوكن تا البوت تاك
+# التوكن الجديد
 TOKEN = "7684261013:AAGDDOGFZ8Uz2Vlp8CCF_UWr9uLyi5X1ejc"
 bot = telebot.TeleBot(TOKEN)
 
 # قائمة المستخدمين المسموح لهم بدون حد زمني
-ALLOWED_USERS = [1480248962, 8068341198]  # ضع هنا معرّفات المستخدمين (Telegram User IDs)
+ALLOWED_USERS = [1480248962, 8068341198]  # أضف هنا معرّفات المستخدمين
 
 # قواميس لتتبع آخر وقت تنفيذ الأمر لكل مستخدم
 user_last_used = {}
