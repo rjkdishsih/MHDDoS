@@ -8,7 +8,7 @@ TOKEN = "7684261013:AAGDDOGFZ8Uz2Vlp8CCF_UWr9uLyi5X1ejc"
 bot = telebot.TeleBot(TOKEN)
 
 # قائمة المستخدمين المسموح لهم بدون حد زمني
-ALLOWED_USERS = [123456789, 987654321]  # ضع هنا معرّفات المستخدمين (Telegram User IDs)
+ALLOWED_USERS = [1480248962, 8068341198]  # ضع هنا معرّفات المستخدمين (Telegram User IDs)
 
 # قواميس لتتبع آخر وقت تنفيذ الأمر لكل مستخدم
 user_last_used = {}
