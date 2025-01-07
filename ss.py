@@ -3,7 +3,7 @@ import os
 import time
 
 # هنا حط التوكن تا البوت تاك
-TOKEN = "7109397811:AAGGULNr7b8I0ldq5DS4NJytZ7RSRyF389k"
+TOKEN = "7684261013:AAGDDOGFZ8Uz2Vlp8CCF_UWr9uLyi5X1ejc"
 bot = telebot.TeleBot(TOKEN)
 
 # قائمة المستخدمين المسموح لهم بدون حد زمني
