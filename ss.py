@@ -31,7 +31,7 @@ def handle_start_command(message):
             f"/CRASH <TYPE> <IP/HOST:PORT> <THREADS> <MS>\n\n"
             f"💡 EXAMPLE:\n"
             f"/CRASH UDP 143.92.125.230:10013 10 900\n\n"
-            f"⚠️ *NOTE:* THIS BOT IS FOR EDUCATIONAL PURPOSES ONLY."
+            f"⚠️ *NOTE:* THIS BOT IS FOR EDUCATIONAL PURPOSES ONLY"
         )
 
         markup = InlineKeyboardMarkup()
