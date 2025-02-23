@@ -5,7 +5,7 @@ import subprocess
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 # Telegram Bot Token
-TOKEN = "7684261013:AAEQ89XJjf3bBKmVkSBvYu7F4XZUKeFgGhE"
+TOKEN = "7684261013:7684261013:AAFs8GcKQBvF6bQUW3jKEj7lOE-KZpYUjls"
 bot = telebot.TeleBot(TOKEN)
 
 # Allowed Admins to use specific commands
